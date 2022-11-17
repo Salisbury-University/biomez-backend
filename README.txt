@@ -18,7 +18,9 @@ Setting up MongoDB database:
 
   a) Install pymongo:
   
-  ``` pip install pymongo[srv] ```
+  ```
+  pip install pymongo[srv]
+  ```
   
 
 
