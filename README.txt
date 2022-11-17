@@ -17,7 +17,8 @@ Setting up MongoDB database:
 2) Create virtual environment and install necessary dependencies (I used VS Code for this step which has a convenient extension MongoDB)
 
   a) Install pymongo:
-  ~~~ pip install pymongo[srv] ~~~
+  
+  "` pip install pymongo[srv] "`
   
 
 
