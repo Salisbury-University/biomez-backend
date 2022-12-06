@@ -17,11 +17,8 @@ Developed by Sam Blaxberg and Nick Lautieri
     a) Navigate to your desired project folder and setup virtual environment
 `python venv [venv_name]`
 
-    To activate:
-`source ~/[project_folder]/[project_name]/[venv_name]/bin/activate`
-
-    To deactivate:
-`deactivate`
+    To activate: `source ~/[project_folder]/[project_name]/[venv_name]/bin/activate`
+    To deactivate: `deactivate`
 
     b) Install flask
 `pip install Flask`
