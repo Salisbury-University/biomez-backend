@@ -14,22 +14,19 @@ Developed by Sam Blaxberg and Nick Lautieri
     f) Finish and close
    
 ##### 2) Create virtual environment and install necessary dependencies (using VS Code and Unix commands)
-    a) Navigate to your desired project folder and setup virtual environment
+    a) Navigate to your desired project folder and setup virtual environment:
 `python venv [venv_name]`
 
-    To activate: `source ~/[project_folder]/[project_name]/[venv_name]/bin/activate`
-    To deactivate: `deactivate`
-
-    b) Install flask
+    b) Install flask:
 `pip install Flask`
 
-    c) Install CORS
+    c) Install CORS:
 `pip install -U flask-cors`
     
-    d) Install pymongo 
+    d) Install pymongo:
 `pip install pymongo[srv]`
 
-    e) Install yaml for accessing URI key 
+    e) Install yaml for accessing URI key:
 `pip install pyyaml`
     
     f) Add MongoDB extension for VS Code
