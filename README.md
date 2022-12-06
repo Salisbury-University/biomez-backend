@@ -10,21 +10,31 @@ Developed by Sam Blaxberg and Nick Lautieri
     b) Select cloud provider and region (AWS and NAE)
     c) Rename cluster if you'd like (note: this cannot be changed later)
     d) Create a username and password to authenticate your connection, then "Create User"
-    e) Select connect from "My Local Environment" and add your current IP address
+    e) Select connect from "My Local Environment" and add your current IP address. (Also includes a setting to allow access from any device)
     f) Finish and close
    
 ##### 2) Create virtual environment and install necessary dependencies (using VS Code and Unix commands)
     a) Navigate to your desired project folder and setup virtual environment
 `python venv [venv_name]`
+
+    To activate:
+`source ~/[project_folder]/[project_name]/[venv_name]/bin/activate`
+
+    To deactivate:
+`deactivate`
+
+    b) Install flask
+`pip install Flask`
+
+    c) Install CORS
+`pip install -U flask-cors`
     
-    b) Install pymongo 
+    d) Install pymongo 
 `pip install pymongo[srv]`
 
-    c) Install python-dotenv for accessing an environment variable file that contains user credentials
-`pip install python-dotenv`
+    e) Install yaml for accessing URI key 
+`pip install pyyaml`
     
-    d) Add MongoDB extension for VS Code
+    f) Add MongoDB extension for VS Code
     
-  
-Requirements: Flask
-Installation Instructions:
+
