@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, request, jsonify
 from pymongo import MongoClient
 from bson.objectid import ObjectId
 from flask_cors import CORS
@@ -21,15 +21,18 @@ def data():
     if request.method == 'POST':
         body = request.json
         articleName = body['articleName']
-        authorName = body['authorName'] 
+        authorName = body['authorName']
+        doi = body['doi']
         db['records'].insert_one({
             "articleName": articleName,
-            "authorName": authorName
+            "authorName": authorName,
+            "doi": doi 
         })
         return jsonify({
             'status': 'Record added successfully',
             'articleName': articleName,
             'authorName': authorName,
+            'doi': doi
         })
     
     # GET record from db
@@ -40,10 +43,12 @@ def data():
             id = data['_id']
             articleName = data['articleName']
             authorName = data['authorName']
+            doi = data['doi']
             dataDict = {
                 '_id': str(ObjectId(id)),
                 'articleName': articleName,
                 'authorName': authorName,
+                'doi': doi
             }
             dataJson.append(dataDict)
         print(dataJson)
@@ -58,10 +63,12 @@ def onedata(id):
         id = data['_id']
         articleName = data['articleName']
         authorName = data['authorName']
+        doi = data['doi']
         dataDict = {
             '_id': str(ObjectId(id)),
             'articleName': articleName,
             'authorName': authorName,
+            'doi': doi
         }
         print(dataDict)
         return jsonify(dataDict)
@@ -70,20 +77,21 @@ def onedata(id):
     if request.method == 'DELETE':
         db['records'].delete_one({'_id': ObjectId(id)})
         print('\n # Deletion successful # \n')
-        return jsonify({'status': 'Data id: ' + id + ' is deleted!'})
+        return jsonify({'status': 'Record (id: ' + id + ') is deleted!'})
 
     # UPDATE record by id
     if request.method == 'PUT':
         body = request.json
         articleName = body['articleName']
         authorName = body['authorName']
-
+        doi = body['doi']
         db['records'].update_one(
             {'_id': ObjectId(id)},
             {
                 "$set": {
                     "articleName": articleName,
                     "authorName": authorName,
+                    "doi": doi
                 }
             }
         )
