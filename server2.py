@@ -11,7 +11,6 @@ client = MongoClient(config['uri'])
 db = client['biomez']
 CORS(app)
 
-
 @app.errorhandler(404)
 def resource_not_found(e):
     return jsonify(error=str(e)), 404
@@ -19,10 +18,6 @@ def resource_not_found(e):
 @app.errorhandler(DuplicateKeyError)
 def resource_not_found(e):
     return jsonify(error=f"Duplicate key error."), 400
-
-@app.route('/')
-def index():
-    return '<h1>Home Page</h1>'
 
 @app.route('/records', methods=['POST', 'GET'])
 def data():
