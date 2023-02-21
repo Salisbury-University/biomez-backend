@@ -42,7 +42,7 @@ Developed by Nick Lautieri
     e) Insert the Zotero CSV file and choose CSV file type
     f) Keep the delimiter as comma, deselect ignore empty strings, and select the following fields:
         - Item Type, Pub Year, Author, Title, Pub Title, ISSN, DOI, URL, Abstract Title, Date, Issue, Volume, Library Catalog, Manual and Automatic Tags
-    g) Finish my clicking import
+    g) Finish by clicking import
 
 
 
