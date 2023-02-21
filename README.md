@@ -1,6 +1,6 @@
 BIOME-Z Project Backend
 ======================
-Developed by Sam Blaxberg and Nick Lautieri
+Developed by Nick Lautieri
 
 ## Setting up MongoDB database:
 
@@ -33,4 +33,16 @@ Developed by Sam Blaxberg and Nick Lautieri
     
     f) Add MongoDB extension for VS Code
     
+## Importing files from Zotero library into MongoDB
+
+    a) After being added to Dr. Maier's Zotero library, use the control key to select up to 100 files at once
+    b) Click the export button and then export as a CSV file
+    c) Open MongoDB Compass and sign into database
+    d) Select your collection and then click 'Add Data' then 'Import File'
+    e) Insert the Zotero CSV file and choose CSV file type
+    f) Keep the delimiter as comma, deselect ignore empty strings, and select the following fields:
+        - Item Type, Pub Year, Author, Title, Pub Title, ISSN, DOI, URL, Abstract Title, Date, Issue, Volume, Library Catalog, Manual and Automatic Tags
+    g) Finish my clicking import
+
+
 
