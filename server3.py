@@ -12,14 +12,18 @@ client = MongoClient(config['uri'])
 db = client['biomez']
 CORS(app)
 
+# Error handling for resource not found.
 @app.errorhandler(404)
 def resource_not_found(e):
     return jsonify(error=str(e)), 404
 
+# Error handling for duplicate key error.
 @app.errorhandler(DuplicateKeyError)
 def resource_not_found(e):
     return jsonify(error=f"Duplicate key error."), 400
 
+# This route requests the search query from the front-end and searches the 
+# compound index within MongoDB to return matching records.
 @app.route('/post-json', methods=['POST'])
 def postJsonHandler():
     query = request.json['q']
@@ -33,6 +37,7 @@ def postJsonHandler():
     )
     return dumps(result)
 
+# This route handles record creation and reading via POST and GET request
 @app.route('/records', methods=['POST', 'GET'])
 def data():
     
@@ -133,6 +138,7 @@ def data():
         print(dataJson)
         return jsonify(dataJson)
 
+# This route handles reading, deleting, and updating using the unique object _id in MongoDB
 @app.route('/records/<id>', methods=['GET', 'DELETE', 'PUT'])
 def onedata(id):
 
