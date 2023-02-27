@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify
 from pymongo import MongoClient
 from pymongo.errors import DuplicateKeyError
 from bson.objectid import ObjectId
+from bson.json_util import dumps
 from flask_cors import CORS
 import yaml
 
@@ -18,6 +19,19 @@ def resource_not_found(e):
 @app.errorhandler(DuplicateKeyError)
 def resource_not_found(e):
     return jsonify(error=f"Duplicate key error."), 400
+
+@app.route('/post-json', methods=['POST'])
+def postJsonHandler():
+    query = request.json['q']
+    records = db.records
+
+    result = records.find(
+        { "$text": {
+            "$search": query
+        }
+        }
+    )
+    return dumps(result)
 
 @app.route('/records', methods=['POST', 'GET'])
 def data():
