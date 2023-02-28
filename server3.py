@@ -35,7 +35,11 @@ def postJsonHandler():
         }
         }
     )
-    return dumps(result)
+    data = []
+    for doc in result:
+        doc['_id'] = str(doc['_id'])
+        data.append(doc)
+    return jsonify(data)
 
 # This route handles record creation and reading via POST and GET request
 @app.route('/records', methods=['POST', 'GET'])
