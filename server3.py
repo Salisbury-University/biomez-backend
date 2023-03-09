@@ -2,29 +2,37 @@ from flask import Flask, request, jsonify
 from pymongo import MongoClient
 from pymongo.errors import DuplicateKeyError
 from bson.objectid import ObjectId
-from bson.json_util import dumps
+from bson.json_util import dumps, loads
 from flask_cors import CORS
 import yaml
 
+# Initialize Flask app and MongoDB connection
 app = Flask(__name__)
 config = yaml.safe_load(open('db.yaml'))
 client = MongoClient(config['uri'])
 db = client['biomez']
 CORS(app)
 
-# Error handling for resource not found.
+# Error handling for 404 error
 @app.errorhandler(404)
 def resource_not_found(e):
     return jsonify(error=str(e)), 404
 
-# Error handling for duplicate key error.
+# Error handling for 400 error
 @app.errorhandler(DuplicateKeyError)
 def resource_not_found(e):
     return jsonify(error=f"Duplicate key error."), 400
 
-# This route requests the search query from the front-end and searches the 
-# compound index within MongoDB to return matching records.
-@app.route('/post-json', methods=['POST'])
+# Default route
+@app.route('/', methods=['GET'])
+def home():
+    msg = "Biome-z Database"
+    return(msg)
+
+# Route for searching MongoDB using the search term received from the front-end.
+# This function accepts json in the following format: 
+# { "q": <search term string> }
+@app.route('/post-json', methods=['POST','GET'])
 def postJsonHandler():
     query = request.json['q']
     records = db.records
@@ -37,112 +45,119 @@ def postJsonHandler():
     )
     data = []
     for doc in result:
-        doc['_id'] = str(doc['_id'])
+        doc['_id'] = str(doc['_id']) 
         data.append(doc)
+    print(data)
     return jsonify(data)
 
-# This route handles record creation and reading via POST and GET request
+# Route for processing POST and GET requests respectively.
+# POST implementation inserts a record into the database 
+# GET implementation returns all records within the database
 @app.route('/records', methods=['POST', 'GET'])
 def data():
     
     # POST record to db
     if request.method == 'POST':
         body = request.json
-        itemType = body['Item Type']
-        pubYear = body['Publication Year']
-        author = body['Author']
-        title = body['Title']
-        pubTitle = body['Publication Title']
-        issn = body['ISSN']
-        doi = body['DOI']
-        url = body['Url']
-        abstract = body['Abstract Note']
-        date = body['Date']
-        issue = body['Issue']
-        volume = body['Volume']
-        libCatalog = body['Library Catalog']
-        manualTags = body['Manual Tags']
-        autoTags = body['Automatic Tags']
+        itemType = body['itemType']
+        pubYear = body['pubYear']
+        author = body['author']
+        title = body['title']
+        pubTitle = body['pubTitle']
+        issn = body['issn']
+        doi = body['doi']
+        url = body['url']
+        abstract = body['abstract']
+        date = body['date']
+        issue = body['issue']
+        volume = body['volume']
+        libCatalog = body['libCatalog']
+        manualTags = body['manualTags']
+        autoTags = body['autoTags']
         db['records'].insert_one({
-            'Item Type': itemType,
-            'Publication Year': pubYear,
-            'Author': author,
-            'Title': title,
-            'Publication Title': pubTitle,
-            'ISSN': issn,
-            'DOI': doi,
-            'Url': url,
-            'Abstract Note': abstract,
-            'Date': date,
-            'Issue': issue,
-            'Volume': volume,
-            'Library Catalog': libCatalog,
-            'Manual Tags': manualTags,
-            'Automatic Tags': autoTags
+            'itemType': itemType,
+            'pubYear': pubYear,
+            'author': author,
+            'title': title,
+            'pubTitle': pubTitle,
+            'issn': issn,
+            'doi': doi,
+            'url': url,
+            'abstract': abstract,
+            'date': date,
+            'issue': issue,
+            'volume': volume,
+            'libCatalog': libCatalog,
+            'manualTags': manualTags,
+            'autoTags': autoTags
        })
         return jsonify({
             'status': 'Record added successfully',
-            'Item Type': itemType,
-            'Publication Year': pubYear,
-            'Author': author,
-            'Title': title,
-            'Publication Title': pubTitle,
-            'ISSN': issn,
-            'DOI': doi,
-            'Url': url,
-            'Abstract Note': abstract,
-            'Date': date,
-            'Issue': issue,
-            'Volume': volume,
-            'Library Catalog': libCatalog,
-            'Manual Tags': manualTags,
-            'Automatic Tags': autoTags
+            'itemType': itemType,
+            'pubYear': pubYear,
+            'author': author,
+            'title': title,
+            'pubTitle': pubTitle,
+            'issn': issn,
+            'doi': doi,
+            'url': url,
+            'abstract': abstract,
+            'date': date,
+            'issue': issue,
+            'volume': volume,
+            'libCatalog': libCatalog,
+            'manualTags': manualTags,
+            'autoTags': autoTags
         })
     
-    # GET record from db
+    # GET records from db
     if request.method == 'GET':
         allData = db['records'].find()
         dataJson = []
         for data in allData:
             id = data['_id']
-            itemType = data['Item Type']
-            pubYear = data['Publication Year']
-            author = data['Author']
-            title = data['Title']
-            pubTitle = data['Publication Title']
-            issn = data['ISSN']
-            doi = data['DOI']
-            url = data['Url']
-            abstract = data['Abstract Note']
-            date = data['Date']
-            issue = data['Issue']
-            volume = data['Volume']
-            libCatalog = data['Library Catalog']
-            manualTags = data['Manual Tags']
-            autoTags = data['Automatic Tags']
+            itemType = data['itemType']
+            pubYear = data['pubYear']
+            author = data['author']
+            title = data['title']
+            pubTitle = data['pubTitle']
+            issn = data['issn']
+            doi = data['doi']
+            url = data['url']
+            abstract = data['abstract']
+            date = data['date']
+            issue = data['issue']
+            volume = data['volume']
+            libCatalog = data['libCatalog']
+            manualTags = data['manualTags']
+            autoTags = data['autoTags']
             dataDict = {
                 '_id': str(ObjectId(id)),
-                'Item Type': itemType,
-                'Publication Year': pubYear,
-                'Author': author,
-                'Title': title,
-                'Publication Title': pubTitle,
-                'ISSN': issn,
-                'DOI': doi,
-                'Url': url,
-                'Abstract Note': abstract,
-                'Date': date,
-                'Issue': issue,
-                'Volume': volume,
-                'Library Catalog': libCatalog,
-                'Manual Tags': manualTags,
-                'Automatic Tags': autoTags
+                'itemType': itemType,
+                'pubYear': pubYear,
+                'author': author,
+                'title': title,
+                'pubTitle': pubTitle,
+                'issn': issn,
+                'doi': doi,
+                'url': url,
+                'abstract': abstract,
+                'date': date,
+                'issue': issue,
+                'volume': volume,
+                'libCatalog': libCatalog,
+                'manualTags': manualTags,
+                'autoTags': autoTags
             }
             dataJson.append(dataDict)
         print(dataJson)
         return jsonify(dataJson)
 
-# This route handles reading, deleting, and updating using the unique object _id in MongoDB
+# Route for processing GET, DELETE, and PUT reuests for a single record using its object _id
+# Example: http://127.0.0.1:5000/records/63ff6e901e2e79534ebcddf5
+# GET implementation returns a single record if _id is found
+# DELETE implementation removes a single record if _id is found
+# PUT implementation updates a single record if _id is found 
 @app.route('/records/<id>', methods=['GET', 'DELETE', 'PUT'])
 def onedata(id):
 
@@ -150,38 +165,38 @@ def onedata(id):
     if request.method == 'GET':
         data = db['records'].find_one({'_id': ObjectId(id)})
         id = data['_id']
-        itemType = data['Item Type']
-        pubYear = data['Publication Year']
-        author = data['Author']
-        title = data['Title']
-        pubTitle = data['Publication Title']
-        issn = data['ISSN']
-        doi = data['DOI']
-        url = data['Url']
-        abstract = data['Abstract Note']
-        date = data['Date']
-        issue = data['Issue']
-        volume = data['Volume']
-        libCatalog = data['Library Catalog']
-        manualTags = data['Manual Tags']
-        autoTags = data['Automatic Tags']
+        itemType = data['itemType']
+        pubYear = data['pubYear']
+        author = data['author']
+        title = data['title']
+        pubTitle = data['pubTitle']
+        issn = data['issn']
+        doi = data['doi']
+        url = data['url']
+        abstract = data['abstract']
+        date = data['date']
+        issue = data['issue']
+        volume = data['volume']
+        libCatalog = data['libCatalog']
+        manualTags = data['manualTags']
+        autoTags = data['autoTags']
         dataDict = {
             '_id': str(ObjectId(id)),
-            'Item Type': itemType,
-            'Publication Year': pubYear,
-            'Author': author,
-            'Title': title,
-            'Publication Title': pubTitle,
-            'ISSN': issn,
-            'DOI': doi,
-            'Url': url,
-            'Abstract Note': abstract,
-            'Date': date,
-            'Issue': issue,
-            'Volume': volume,
-            'Library Catalog': libCatalog,
-            'Manual Tags': manualTags,
-            'Automatic Tags': autoTags
+            'itemType': itemType,
+            'pubYear': pubYear,
+            'author': author,
+            'title': title,
+            'pubTitle': pubTitle,
+            'issn': issn,
+            'doi': doi,
+            'url': url,
+            'abstract': abstract,
+            'date': date,
+            'issue': issue,
+            'volume': volume,
+            'libCatalog': libCatalog,
+            'manualTags': manualTags,
+            'autoTags': autoTags
         }
         print(dataDict)
         return jsonify(dataDict)
@@ -195,40 +210,40 @@ def onedata(id):
     # UPDATE record by id
     if request.method == 'PUT':
         body = request.json
-        itemType = body['Item Type']
-        pubYear = body['Publication Year']
-        author = body['Author']
-        title = body['Title']
-        pubTitle = body['Publication Title']
-        issn = body['ISSN']
-        doi = body['DOI']
-        url = body['Url']
-        abstract = body['Abstract Note']
-        date = body['Date']
-        issue = body['Issue']
-        volume = body['Volume']
-        libCatalog = body['Library Catalog']
-        manualTags = body['Manual Tags']
-        autoTags = body['Automatic Tags']
+        itemType = body['itemType']
+        pubYear = body['pubYear']
+        author = body['author']
+        title = body['title']
+        pubTitle = body['pubTitle']
+        issn = body['issn']
+        doi = body['doi']
+        url = body['url']
+        abstract = body['abstract']
+        date = body['date']
+        issue = body['issue']
+        volume = body['volume']
+        libCatalog = body['libCatalog']
+        manualTags = body['manualTags']
+        autoTags = body['autoTags']
         db['records'].update_one(
             {'_id': ObjectId(id)},
             {
                 "$set": {
-                    'Item Type': itemType,
-                    'Publication Year': pubYear,
-                    'Author': author,
-                    'Title': title,
-                    'Publication Title': pubTitle,
-                    'ISSN': issn,
-                    'DOI': doi,
-                    'Url': url,
-                    'Abstract Note': abstract,
-                    'Date': date,
-                    'Issue': issue,
-                    'Volume': volume,
-                    'Library Catalog': libCatalog,
-                    'Manual Tags': manualTags,
-                    'Automatic Tags': autoTags
+                    'itemType': itemType,
+                    'pubYear': pubYear,
+                    'author': author,
+                    'title': title,
+                    'pubTitle': pubTitle,
+                    'issn': issn,
+                    'doi': doi,
+                    'url': url,
+                    'abstract': abstract,
+                    'date': date,
+                    'issue': issue,
+                    'volume': volume,
+                    'libCatalog': libCatalog,
+                    'manualTags': manualTags,
+                    'autoTags': autoTags
                 }
             }
         )
