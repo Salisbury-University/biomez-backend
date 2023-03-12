@@ -1,16 +1,21 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, Response
 from pymongo import MongoClient
 from pymongo.errors import DuplicateKeyError
 from bson.objectid import ObjectId
 from bson.json_util import dumps
 from flask_cors import CORS
+from rdflib import Graph, Literal, BNode, Namespace, RDF, URIRef, RDF
 import yaml
+import json
 
 app = Flask(__name__)
 config = yaml.safe_load(open('db.yaml'))
 client = MongoClient(config['uri'])
 db = client['biomez']
 CORS(app)
+
+# Define a namespace for the RDF vocabulary
+MY_NS = Namespace('http://localhost:5000/library')
 
 # Error handling for resource not found.
 @app.errorhandler(404)
@@ -21,6 +26,37 @@ def resource_not_found(e):
 @app.errorhandler(DuplicateKeyError)
 def resource_not_found(e):
     return jsonify(error=f"Duplicate key error."), 400
+
+#RDF File download route
+@app.route('/rdf/<entry_id>')
+def get_rdf(entry_id):
+
+    records = db.records
+    entry = records.find_one({'_id': ObjectId(entry_id)})
+
+    csl_data = {
+        "id": entry_id,
+        "author": [{"family": entry['author'].split()[-1], "given": entry['author'].split()[0]}],
+        "title": entry['title'],
+        "abstract": entry['abstract'],
+        "volume": entry['volume'],
+        "issue": entry['issue'],
+        "issn": entry['issn'],
+        "container-title": entry['pubTitle'],
+        "issued": {"date-parts": [[entry['pubYear']]]},
+        "URL": entry['url'],
+        "DOI": entry['doi'],
+        "type": "article-journal"
+    }
+    response = Response(
+        json.dumps(csl_data, ensure_ascii=False),
+        headers={
+            "Content-Disposition": f"attachment;filename={entry_id}.json",
+            "Content-Type": "application/json"
+        }
+    )
+    return response
+
 
 # This route requests the search query from the front-end and searches the 
 # compound index within MongoDB to return matching records.
