@@ -5,20 +5,53 @@ from bson.objectid import ObjectId
 from flask_cors import CORS
 import yaml
 
+# Initialize Flask app and MongoDB connection
 app = Flask(__name__)
 config = yaml.safe_load(open('db.yaml'))
 client = MongoClient(config['uri'])
 db = client['biomez']
 CORS(app)
 
+# Error handling for 404 error
 @app.errorhandler(404)
 def resource_not_found(e):
     return jsonify(error=str(e)), 404
 
+# Error handling for 400 error
 @app.errorhandler(DuplicateKeyError)
 def resource_not_found(e):
     return jsonify(error=f"Duplicate key error."), 400
 
+# Default route
+@app.route('/', methods=['GET'])
+def home():
+    msg = "Biome-z Database"
+    return(msg)
+
+# Route for searching MongoDB using the search term received from the front-end.
+# This function accepts json in the following format: 
+# { "q": <search term string> }
+@app.route('/post-json', methods=['POST','GET'])
+def postJsonHandler():
+    query = request.json['q']
+    records = db.records
+
+    result = records.find(
+        { "$text": {
+            "$search": query
+        }
+        }
+    )
+    data = []
+    for doc in result:
+        doc['_id'] = str(doc['_id']) 
+        data.append(doc)
+    print(data)
+    return jsonify(data)
+
+# Route for processing POST and GET requests respectively.
+# POST implementation inserts a record into the database 
+# GET implementation returns all records within the database
 @app.route('/records', methods=['POST', 'GET'])
 def data():
     
@@ -76,7 +109,7 @@ def data():
             'Automatic Tags': autoTags
         })
     
-    # GET record from db
+    # GET records from db
     if request.method == 'GET':
         allData = db['records'].find()
         dataJson = []
@@ -119,6 +152,11 @@ def data():
         print(dataJson)
         return jsonify(dataJson)
 
+# Route for processing GET, DELETE, and PUT reuests for a single record using its object _id
+# Example: http://127.0.0.1:5000/records/63ff6e901e2e79534ebcddf5
+# GET implementation returns a single record if _id is found
+# DELETE implementation removes a single record if _id is found
+# PUT implementation updates a single record if _id is found 
 @app.route('/records/<id>', methods=['GET', 'DELETE', 'PUT'])
 def onedata(id):
 
