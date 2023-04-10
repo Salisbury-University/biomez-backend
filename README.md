@@ -44,5 +44,12 @@ Developed by Nick Lautieri
         - Item Type, Pub Year, Author, Title, Pub Title, ISSN, DOI, URL, Abstract Title, Date, Issue, Volume, Library Catalog, Manual and Automatic Tags
     g) Finish by clicking import
 
+## Gmail Account Info:
+    cosc426.biomez@gmail.com
+    biomez!!!
+    
+## MongoDB Account Info:
+    cosc426.biomez@gmail.com
+    bpseframework!
 
 
