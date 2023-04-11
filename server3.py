@@ -57,6 +57,41 @@ def get_rdf(entry_id):
     )
     return response
 
+# Convert selected RDF entries to JSON-CSL and download as a single file
+@app.route('/rdf/selected', methods=['POST'])
+def get_selected_rdf():
+    records = db.records
+    data = request.get_json()
+    selected_ids = data['ids']
+    selected_entries = []
+    for entry_id in selected_ids:
+        entry = records.find_one({'_id': ObjectId(entry_id)})
+        selected_entries.append(entry)
+    csl_data = []
+    for entry in selected_entries:
+        csl_data.append({
+            "id": str(entry['_id']),
+            "author": [{"family": entry['author'].split()[-1], "given": entry['author'].split()[0]}],
+            "title": entry['title'],
+            "abstract": entry['abstract'],
+            "volume": entry['volume'],
+            "issue": entry['issue'],
+            "issn": entry['issn'],
+            "container-title": entry['pubTitle'],
+            "issued": {"date-parts": [[entry['pubYear']]]},
+            "URL": entry['url'],
+            "DOI": entry['doi'],
+            "type": "article-journal"
+        })
+    response = Response(
+        json.dumps(csl_data, ensure_ascii=False),
+        headers={
+            "Content-Disposition": "attachment;filename=SelectedFiles.json",
+            "Content-Type": "application/json"
+        }
+    )
+    return response
+
 
 # This route requests the search query from the front-end and searches the 
 # compound index within MongoDB to return matching records.
